@@ -18,6 +18,7 @@ export default function WebGazerComponent() {
   const [cameraStatus, setCameraStatus] = useState<'requesting' | 'granted' | 'denied'>('requesting');
   const [showCalibration, setShowCalibration] = useState(false);
   const [isCalibrated, setIsCalibrated] = useState(false);
+  const [showEyeTrackingAlert, setShowEyeTrackingAlert] = useState(false);
   const gazePointsRef = useRef<GazePoint[]>([]);
   const centroidRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
@@ -37,6 +38,11 @@ export default function WebGazerComponent() {
       setTimeout(() => {
         setShowCalibration(false);
         setIsCalibrated(true);
+        // Show eye tracking alert for 4 seconds
+        setShowEyeTrackingAlert(true);
+        setTimeout(() => {
+          setShowEyeTrackingAlert(false);
+        }, 4000);
       }, 500);
     }
   };
@@ -204,17 +210,25 @@ export default function WebGazerComponent() {
           </div>
         )}
         
-        {cameraStatus === 'granted' && isInitialized && isCalibrated && (
-          <div className="alert alert-success shadow-lg max-w-xs">
+        {cameraStatus === 'granted' && isInitialized && isCalibrated && showEyeTrackingAlert && (
+          <div className="alert alert-success shadow-lg max-w-xs animate-in slide-in-from-top-2 duration-300">
             <div className="flex items-center gap-3">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
               </svg>
-              <div>
+              <div className="flex-1">
                 <h3 className="font-bold text-sm">Eye Tracking Active</h3>
                 <div className="text-xs opacity-75">Centroid prediction enabled</div>
               </div>
+              <button 
+                onClick={() => setShowEyeTrackingAlert(false)}
+                className="btn btn-ghost btn-xs btn-circle hover:bg-white/20"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           </div>
         )}
