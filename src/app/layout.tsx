@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inria_Serif } from "next/font/google";
 import "./globals.css";
+import NavBar from "@/components/NavBar";
+
 
 const inriaSerif = Inria_Serif({
   variable: "--font-inria-serif",
@@ -34,6 +36,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} 
           ${inriaSerif.variable} antialiased`}
       >
+      <NavBar />
         {children}
       </body>
     </html>
