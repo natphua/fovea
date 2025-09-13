@@ -29,6 +29,15 @@ const FocusSummary = () => {
     const strokeDasharray = circumference;
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
+    // Determine color based on percentage
+    const getProgressColor = (percentage) => {
+      if (percentage >= 80) return "rgb(34, 197, 94)"; // Green
+      if (percentage >= 50) return "rgb(234, 179, 8)"; // Yellow
+      return "rgb(239, 68, 68)"; // Red
+    };
+
+    const progressColor = getProgressColor(percentage);
+
     return (
       <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
         <svg width={size} height={size} className="transform -rotate-90">
@@ -37,7 +46,7 @@ const FocusSummary = () => {
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="hsl(var(--bc) / 0.1)"
+            stroke="rgb(229, 231, 235)"
             strokeWidth="8"
             fill="none"
           />
@@ -46,7 +55,7 @@ const FocusSummary = () => {
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="hsl(var(--p))"
+            stroke={progressColor}
             strokeWidth="8"
             fill="none"
             strokeDasharray={strokeDasharray}
@@ -62,15 +71,54 @@ const FocusSummary = () => {
     );
   };
 
-  const MetricItem = ({ icon: Icon, label, value, unit = '' }) => (
-    <div className="flex items-center justify-between py-3 border-b border-base-300 last:border-b-0">
-      <div className="flex items-center gap-3">
-        <Icon className="w-5 h-5 text-primary" />
-        <span className="text-sm font-medium">{label}</span>
+  const MetricItem = ({ icon: Icon, label, value, unit = '', color = 'blue' }) => {
+    const colorClasses = {
+      blue: 'from-blue-500 to-blue-600',
+      green: 'from-green-500 to-green-600', 
+      yellow: 'from-yellow-500 to-yellow-600',
+      purple: 'from-purple-500 to-purple-600'
+    };
+
+    return (
+      <div className="group relative overflow-hidden bg-gradient-to-br from-base-100 to-base-200 rounded-xl p-4 border border-base-300 hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+        {/* Background gradient overlay on hover */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses[color]} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
+        
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* Icon with gradient background */}
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}>
+              <Icon className="w-6 h-6 text-white" />
+            </div>
+            
+            {/* Label */}
+            <div>
+              <h4 className="font-semibold text-base-content group-hover:text-primary transition-colors duration-300">
+                {label}
+              </h4>
+              <p className="text-xs text-base-content/60">Performance metric</p>
+            </div>
+          </div>
+          
+          {/* Value with enhanced styling */}
+          <div className="text-right">
+            <div className={`text-2xl font-bold bg-gradient-to-r ${colorClasses[color]} bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300`}>
+              {value}{unit}
+            </div>
+            <div className="text-xs text-base-content/50 mt-1">Current</div>
+          </div>
+        </div>
+        
+        {/* Progress bar indicator */}
+        <div className="mt-3 h-1 bg-base-300 rounded-full overflow-hidden">
+          <div 
+            className={`h-full bg-gradient-to-r ${colorClasses[color]} rounded-full transition-all duration-1000 ease-out`}
+            style={{ width: `${Math.min(100, (value / 100) * 100)}%` }}
+          ></div>
+        </div>
       </div>
-      <span className="text-sm font-semibold">{value}{unit}</span>
-    </div>
-  );
+    );
+  };
 
   const HeatMap = () => (
     <div className="bg-base-200 rounded-lg h-48 flex items-center justify-center relative overflow-hidden">
@@ -123,39 +171,51 @@ const FocusSummary = () => {
         {/* Left Column - Focus Score & Metrics */}
         <div className="space-y-6">
           {/* Focus Score Card */}
-          <div className="card bg-base-100 shadow-lg border border-base-300">
+          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="card-body items-center text-center">
               <CircularProgress percentage={mockSession.focusScore} />
+              <h3 className="text-xl font-bold text-gray-800 mt-4">Focus Score</h3>
+              <p className="text-gray-600 text-sm mt-2">Overall performance rating</p>
             </div>
           </div>
 
           {/* Metrics Card */}
-          <div className="card bg-base-100 shadow-lg border border-base-300">
+          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="card-body">
-              <h3 className="card-title text-lg mb-4">Session Metrics</h3>
-              <div className="space-y-1">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                  <Target className="w-4 h-4 text-white" />
+                </div>
+                <h3 className="card-title text-lg">Session Metrics</h3>
+              </div>
+              
+              <div className="space-y-4">
                 <MetricItem 
                   icon={Eye} 
                   label="Eyes on Screen" 
                   value={mockSession.metrics.eyesOnScreen} 
                   unit="%" 
+                  color="blue"
                 />
                 <MetricItem 
                   icon={Target} 
-                  label="Time to First Fixation (TTFF)" 
+                  label="Time to First Fixation" 
                   value={mockSession.metrics.timeToFirstFixation} 
                   unit="s" 
+                  color="green"
                 />
                 <MetricItem 
                   icon={Clock} 
                   label="Blink Rate" 
                   value={mockSession.metrics.blinkRate} 
                   unit="/min" 
+                  color="yellow"
                 />
                 <MetricItem 
                   icon={RefreshCw} 
                   label="Revisits" 
                   value={mockSession.metrics.revisits} 
+                  color="purple"
                 />
               </div>
             </div>
@@ -165,30 +225,63 @@ const FocusSummary = () => {
         {/* Middle Column - AI Summary & Heat Map */}
         <div className="space-y-6">
           {/* AI Summary Card */}
-          <div className="card bg-base-100 shadow-lg border border-base-300">
+          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="card-body">
-              <h3 className="card-title text-lg mb-4">AI Summary of Focus Session</h3>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                </div>
+                <h3 className="card-title text-lg">AI Summary of Focus Session</h3>
+              </div>
               
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-sm text-primary mb-2 border-b border-primary pb-1">
-                    What You Learned
-                  </h4>
-                  <div className="bg-base-200 p-3 rounded-lg">
-                    <p className="text-sm text-base-content/80">
-                      {mockSession.aiSummary.whatYouLearned}
-                    </p>
+              <div className="space-y-6">
+                {/* What You Learned Section */}
+                <div className="group">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-3 h-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full shadow-sm"></div>
+                    <h4 className="text-lg font-bold text-green-600">What You Learned</h4>
+                    <div className="flex-1 h-px bg-gradient-to-r from-green-200 to-transparent"></div>
+                  </div>
+                  
+                  <div className="relative">
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5 shadow-sm group-hover:shadow-md transition-all duration-300">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-base-content leading-relaxed">
+                          {mockSession.aiSummary.whatYouLearned}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Decorative elements */}
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full opacity-60"></div>
+                    <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-emerald-400 rounded-full opacity-40"></div>
                   </div>
                 </div>
                 
-                <div>
-                  <h4 className="font-semibold text-sm text-secondary mb-2 border-b border-secondary pb-1">
-                    What You Missed
-                  </h4>
-                  <div className="bg-base-200 p-3 rounded-lg">
-                    <p className="text-sm text-base-content/80">
-                      {mockSession.aiSummary.whatYouMissed}
-                    </p>
+                {/* What You Missed Section */}
+                <div className="group">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-3 h-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-full shadow-sm"></div>
+                    <h4 className="text-lg font-bold text-orange-600">Areas for Improvement</h4>
+                    <div className="flex-1 h-px bg-gradient-to-r from-orange-200 to-transparent"></div>
+                  </div>
+                  
+                  <div className="relative">
+                    <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-xl p-5 shadow-sm group-hover:shadow-md transition-all duration-300">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-base-content leading-relaxed">
+                          {mockSession.aiSummary.whatYouMissed}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Decorative elements */}
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-400 rounded-full opacity-60"></div>
+                    <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-red-400 rounded-full opacity-40"></div>
                   </div>
                 </div>
               </div>
@@ -196,7 +289,7 @@ const FocusSummary = () => {
           </div>
 
           {/* Heat Map Card */}
-          <div className="card bg-base-100 shadow-lg border border-base-300">
+          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="card-body">
               <h3 className="card-title text-lg mb-4">Your Heat Map</h3>
               <HeatMap />
@@ -206,19 +299,40 @@ const FocusSummary = () => {
 
         {/* Right Column - Previous Sessions */}
         <div>
-          <div className="card bg-base-100 shadow-lg border border-base-300">
+          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="card-body">
-              <h3 className="card-title text-lg mb-4">Previous Focus Sessions</h3>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-white" />
+                </div>
+                <h3 className="card-title text-lg">Previous Focus Sessions</h3>
+              </div>
               
               <div className="space-y-3">
-                {mockSession.previousSessions.map((session, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-base-300 transition-colors cursor-pointer">
-                    <span className="text-sm font-medium">{session.date}</span>
-                    <div className="badge badge-primary badge-lg">
-                      {session.score}%
+                {mockSession.previousSessions.map((session, index) => {
+                  // Determine container background gradient based on percentage
+                  const getContainerColor = (score) => {
+                    if (score >= 80) return 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:from-green-100 hover:to-emerald-100'; // Green gradient
+                    if (score >= 50) return 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 hover:from-yellow-100 hover:to-orange-100'; // Yellow gradient
+                    return 'bg-gradient-to-r from-red-50 to-pink-50 border-red-200 hover:from-red-100 hover:to-pink-100'; // Red gradient
+                  };
+
+                  // Determine badge color based on percentage (same as container colors)
+                  const getBadgeColor = (score) => {
+                    if (score >= 80) return 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'; // Green badge
+                    if (score >= 50) return 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'; // Yellow badge
+                    return 'bg-gradient-to-r from-red-500 to-pink-500 text-white'; // Red badge
+                  };
+
+                  return (
+                    <div key={index} className={`flex items-center justify-between p-3 rounded-lg border transition-colors cursor-pointer ${getContainerColor(session.score)}`}>
+                      <span className="text-sm font-medium">{session.date}</span>
+                      <div className={`px-3 py-1 rounded-full text-sm font-bold ${getBadgeColor(session.score)}`}>
+                        {session.score}%
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 
                 {/* Placeholder sessions */}
                 <div className="flex items-center justify-between p-3 bg-base-200 rounded-lg opacity-50">
@@ -242,11 +356,12 @@ const FocusSummary = () => {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-center gap-4 mt-8">
-        <button className="btn btn-primary btn-lg">
+      <div className="flex justify-center gap-6 mt-12">
+        <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2 hover:cursor-pointer">
+          <Eye className="w-5 h-5" />
           Start New Session
         </button>
-        <button className="btn btn-outline btn-lg">
+        <button className="bg-white/90 backdrop-blur-sm border-2 border-gray-200 hover:border-blue-300 text-gray-700 hover:text-blue-600 font-semibold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
           Export Data
         </button>
       </div>
