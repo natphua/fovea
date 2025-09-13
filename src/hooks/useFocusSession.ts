@@ -21,6 +21,7 @@ export function useFocusSession() {
 
   const endSession = () => {
     if (!session) return;
+    window.webgazer.end();
     const endTime = Date.now();
     const metrics = computeMetrics(gazeData, session.startTime, endTime);
     const fullSession = { ...session, endTime, gazeData, metrics };
