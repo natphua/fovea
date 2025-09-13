@@ -29,10 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} 
-          ${inriaSerif.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inriaSerif.variable} antialiased
+          min-h-screen bg-base-100 overflow-x-hidden
+          snap-y snap-mandatory scroll-smooth`}
       >
         {children}
       </body>
