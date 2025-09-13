@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inria_Serif } from "next/font/google";
 import "./globals.css";
+
+const inriaSerif = Inria_Serif({
+  variable: "--font-inria-serif",
+  subsets: ["latin"],
+  weight: ["300", "400", "700"], // Light, Regular, Bold
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +31,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} 
+          ${inriaSerif.variable} antialiased`}
       >
         {children}
       </body>
