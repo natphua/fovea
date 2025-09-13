@@ -57,7 +57,7 @@ export default function StartSessionPage() {
           hasStarted ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
       >
-        <div className="card bg-base-100 shadow-xl p-6 mb-6 max-w-xl">
+        <div className="card bg-base-100 shadow-xl p-6 mb-6 max-w-2xl">
           <form onSubmit={handleYoutubeSubmit} className="mb-4">
             <label className="block mb-2 font-medium">Paste YouTube Link</label>
             <div className="flex gap-2">
@@ -88,12 +88,12 @@ export default function StartSessionPage() {
 
       {/* Media Viewer */}
       {hasStarted && embedUrl && (
-        <div className="relative max-w-5xl w-full transition-opacity duration-700 opacity-100">
+        <div className="relative max-w-7xl w-full h-screen transition-opacity duration-700 opacity-100">
           {embedUrl.includes("youtube.com") ? (
             <iframe
               src={embedUrl}
               width="100%"
-              height="500"
+              height="100%"
               allow="autoplay; encrypted-media"
               allowFullScreen
               className="rounded-lg shadow-lg"
@@ -102,7 +102,7 @@ export default function StartSessionPage() {
             <iframe
               src={embedUrl}
               width="100%"
-              height="600"
+              height="100%"
               className="rounded-lg shadow-lg"
             />
           ) : pdfFile?.type === "video/quicktime" || pdfFile?.name.endsWith(".mov") ? (

@@ -1,11 +1,13 @@
 "use client"; 
 import { useRouter } from "next/navigation";
+import NavBar from "@/components/NavBar";
 
 export default function Home() {
   const router = useRouter();
 
   return (
     <div className="min-h-screen bg-base-100">
+      <NavBar />
       {/* Mobile menu */}
       <div className="dropdown dropdown-end lg:hidden">
         <div tabIndex={0} role="button" className="btn btn-ghost">

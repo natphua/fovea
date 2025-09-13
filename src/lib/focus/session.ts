@@ -12,7 +12,7 @@ export interface GazePoint {
 export interface FocusMetrics {
   focusScore: number;
   sessionSummary: string;
-  attentionStability: "High" | "Medium" | "Low";
+  attentionStability: "High" | "Medium" | "Low" | "N/A";
   stabilityGraph: number[];
   peakFocusWindow: string;
   distractionRecovery: string;
