@@ -1,6 +1,9 @@
-
+"use client"; 
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-base-100">
       {/* Navigation */}
@@ -57,7 +60,8 @@ export default function Home() {
             </h1>
             
             <div className="mb-12">
-              <button className="btn btn-primary btn-lg text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+              <button onClick={() => router.push("/media-selection")} 
+              className="btn btn-primary btn-lg text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
                 Start a Session
               </button>
             </div>
