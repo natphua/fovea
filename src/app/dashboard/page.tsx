@@ -42,7 +42,7 @@ export default function Home() {
             </h1>
             
             <div className="mb-12">
-              <button onClick={() => router.push("/media-selection")} 
+              <button onClick={() => router.push("/session")} 
               className="btn btn-primary btn-lg text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
                 Start a Session
               </button>
