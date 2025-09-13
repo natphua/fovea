@@ -1,12 +1,17 @@
 import React from 'react'
+import Image from 'next/image'
 
 const MediaSelection = () => {
   return (
-    <section>
+    <section className='min-h-screen p-4 m-4'>
         {/* Header : Logo */}
+        <div className='flex items-center justify-start mb-8'>
+            {/* <Image src='/' alt='Logo' width={100} height={100} /> */}
+            <p>Fovea</p>
+        </div>
         
         {/* Intro Text */}
-        <div className='flex items-center justify-center text-3xl font-bold'>
+        <div className='flex items-center justify-center text-3xl font-bold mb-8'>
             Choose video or article 
         </div>
 
