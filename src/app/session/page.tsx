@@ -49,42 +49,60 @@ export default function StartSessionPage() {
 
   return (
     <section className="min-h-screen p-6 flex flex-col items-center">
-      <h1 className="text-3xl font-bold mb-6 text-center">Start a Focus Session</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        {hasStarted ? (
+          <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+            Focus Session in Progress
+          </span>
+        ) : (
+          "Start a Focus Session"
+        )}
+      </h1>
 
       {/* Upload UI */}
-      <div
-        className={`transition-opacity duration-700 ${
-          hasStarted ? "opacity-0 pointer-events-none" : "opacity-100"
-        }`}
-      >
-        <div className="card bg-base-100 shadow-xl p-6 mb-6 max-w-2xl">
-          <form onSubmit={handleYoutubeSubmit} className="mb-4">
-            <label className="block mb-2 font-medium">Paste YouTube Link</label>
-            <div className="flex gap-2">
+      {!hasStarted && (
+        <div className="transition-opacity duration-700 opacity-100">
+          <div className="card bg-base-100 shadow-xl p-6 mb-6 max-w-2xl">
+            <form onSubmit={handleYoutubeSubmit} className="mb-4">
+              <label className="block mb-2 font-medium">Paste YouTube Link</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  value={youtubeUrl}
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  className="input input-bordered flex-1"
+                />
+                <button type="submit" className="btn btn-primary">Load</button>
+              </div>
+            </form>
+
+            <div className="divider">OR</div>
+
+            <div>
+              <label className="block mb-2 font-medium">Upload PDF or .mov</label>
               <input
-                type="text"
-                placeholder="https://www.youtube.com/watch?v=..."
-                value={youtubeUrl}
-                onChange={(e) => setYoutubeUrl(e.target.value)}
-                className="input input-bordered flex-1"
+                type="file"
+                accept=".pdf,.mov"
+                onChange={handleFileUpload}
+                className="file-input file-input-bordered w-full"
               />
-              <button type="submit" className="btn btn-primary">Load</button>
             </div>
-          </form>
-
-          <div className="divider">OR</div>
-
-          <div>
-            <label className="block mb-2 font-medium">Upload PDF or .mov</label>
-            <input
-              type="file"
-              accept=".pdf,.mov"
-              onChange={handleFileUpload}
-              className="file-input file-input-bordered w-full"
-            />
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Session Status Bar */}
+      {hasStarted && (
+        <div className="w-full max-w-4xl mb-6">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-4">
+              <div className="w-5 h-5 bg-green-400 rounded-full animate-pulse shadow-xl shadow-green-400/80" style={{ animationDuration: '2s', animationDelay: '0s' }}></div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent animate-pulse" style={{ animationDuration: '2s', animationDelay: '0s' }}>Begin reading when ready</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Media Viewer */}
       {hasStarted && embedUrl && (
