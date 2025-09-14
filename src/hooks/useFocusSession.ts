@@ -100,6 +100,36 @@ export function useFocusSession() {
       console.log("🧮 Computing metrics for", finalGazeData.length, "points");
       const metrics = computeMetrics(finalGazeData, session.startTime, endTime);
 
+      // Get Claude analysis before saving session
+      let claudeAnalysis = null;
+      try {
+        console.log("🤖 Getting Claude analysis...");
+        const analysisResponse = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            focusResults: {
+              metrics,
+              gazeDataPoints: finalGazeData.length,
+              sessionDuration: endTime - session.startTime,
+              fileProtocol: fileProtocol || null,
+            }
+          }),
+        });
+
+        if (analysisResponse.ok) {
+          const analysisData = await analysisResponse.json();
+          claudeAnalysis = analysisData.analysis;
+          console.log("✅ Claude analysis received");
+        } else {
+          console.warn("⚠️ Failed to get Claude analysis:", analysisResponse.status);
+        }
+      } catch (err) {
+        console.warn("⚠️ Error calling Claude API:", err);
+      }
+
       // Insert complete session in DB (first and only write!)
       const { data, error } = await supabase
         .from("focus_sessions")
@@ -109,6 +139,7 @@ export function useFocusSession() {
           end_time: new Date(endTime).toISOString(),
           gaze_data: finalGazeData,
           metrics,
+          claude_analysis: claudeAnalysis,
           file_protocol: fileProtocol || null,
         })
         .select()

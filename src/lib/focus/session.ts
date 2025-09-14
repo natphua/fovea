@@ -24,4 +24,5 @@ export interface FocusSession {
   endTime: number;
   gazeData: GazePoint[];
   metrics?: FocusMetrics;
+  claudeAnalysis?: string;
 }
