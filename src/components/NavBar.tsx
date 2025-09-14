@@ -32,6 +32,11 @@ export default function NavBar() {
                 Contact Us
               </Link>
             </li>
+            <li>
+              <Link href="/try" className="btn bg-primary font-semibold  px-6 rounded-md shadow-md hover:shadow-lg transition-all text-lg lg:text-xl">
+                Try Fovea
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
