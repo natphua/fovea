@@ -13,8 +13,9 @@ export default function NavBar() {
   return (
     <div className="navbar bg-base-100 px-4 lg:px-8">
       <div className="navbar-start">
-        <Link href="/" className="btn btn-ghost text-xl font-bold">
-          🔍 Fovea
+        <Link href="/" className="btn btn-ghost text-xl font-bold flex items-center gap-2">
+          <img src="/fovea-icon.svg" alt="Fovea" className="h-6 w-6" />
+          Fovea
         </Link>
       </div>
 

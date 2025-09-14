@@ -77,6 +77,7 @@ export default function DashboardPage() {
     }
   };
 
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -128,10 +129,8 @@ export default function DashboardPage() {
             <div className="card bg-base-100 shadow-lg border border-base-300">
               <div className="card-body">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                    <Eye className="w-4 h-4 text-primary-content" />
-                  </div>
-                  <h2 className="card-title">Recent Focus Sessions</h2>
+                  <img src="/fovea-icon.svg" alt="Fovea" className="w-8 h-8" />
+                  <h2 className="card-title">Recent Sessions</h2>
                 </div>
 
                 {sessions.length === 0 ? (
@@ -195,7 +194,7 @@ export default function DashboardPage() {
                   <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
                     <FileText className="w-4 h-4 text-secondary-content" />
                   </div>
-                  <h2 className="card-title">Previous Files</h2>
+                  <h2 className="card-title">Previous Session Content</h2>
                 </div>
 
                 {prevFiles.length === 0 ? (

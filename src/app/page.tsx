@@ -61,6 +61,9 @@ export default function Landing() {
           <div className="hero w-full bg-base-100">
             <div className="hero-content text-center max-w-4xl">
               <div>
+                <div className="flex justify-center mb-8">
+                  <img src="/fovea.svg" alt="Fovea Logo" className="h-20 w-auto" />
+                </div>
                 <h1 className="text-5xl lg:text-7xl font-bold text-base-content leading-tight mb-8">
                   Understand Your{" "}
                   <span className="relative inline-block">
