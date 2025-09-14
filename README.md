@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fovea - Focus Tracking App
 
-## Getting Started
+A Next.js application that uses eye-tracking technology to measure and improve your focus while reading or working. Built with Supabase for authentication and data persistence.
 
-First, run the development server:
+## Features
+
+- 🔍 **Eye Tracking**: Advanced webcam-based eye tracking to monitor focus patterns
+- 📊 **Focus Analytics**: Detailed insights into attention patterns and concentration levels
+- 📈 **Progress Tracking**: Track focus improvement over time with detailed reports
+- 🔐 **User Authentication**: Secure login/signup with Supabase Auth
+- 📁 **File Management**: Track previously opened files and their focus sessions
+- 🎯 **Focus Scoring**: Get quantified focus scores and recommendations
+
+## Setup Instructions
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Environment Variables
+
+Create a `.env.local` file in the root directory with your Supabase credentials:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 3. Database Setup
+
+1. Create a new Supabase project at [supabase.com](https://supabase.com)
+2. Go to the SQL Editor in your Supabase dashboard
+3. Run the SQL script from `database-setup.sql` to create the required tables and policies
+
+### 4. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Schema
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Tables
 
-## Learn More
+- **focus_sessions**: Stores user focus session data with gaze points and metrics
+- **prev_files**: Tracks previously opened files and access times
+- **auth.users**: Supabase built-in user authentication (managed automatically)
 
-To learn more about Next.js, take a look at the following resources:
+### Supabase Free Plan Compatibility
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This app is designed to work within Supabase's free tier limits:
+- ✅ 500MB database storage
+- ✅ 50,000 monthly active users
+- ✅ 2GB bandwidth
+- ✅ Row Level Security enabled
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── auth/              # Authentication pages (login/signup)
+│   ├── dashboard/         # User dashboard
+│   ├── results/           # Focus session results
+│   └── session/           # Focus session tracking
+├── components/            # React components
+├── contexts/              # React contexts (Auth)
+├── hooks/                 # Custom React hooks
+├── lib/
+│   ├── focus/            # Focus tracking logic
+│   └── supabase/         # Supabase configuration
+└── ...
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Key Features Implementation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Authentication Flow
+- Landing page with sign in/up options
+- Protected routes redirect to login
+- User session stored in cookies via Supabase Auth
+- Automatic redirect to dashboard after login
+
+### Focus Tracking
+- Real-time eye tracking using WebGazer.js
+- Gaze data collection and analysis
+- Focus metrics computation (stability, engagement, etc.)
+- Session persistence to both localStorage and Supabase
+
+### Dashboard
+- View recent focus sessions with scores
+- Browse previously accessed files
+- Quick access to start new sessions
+- Focus score trends and insights
+
+## Technologies Used
+
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS, DaisyUI
+- **Backend**: Supabase (Auth, Database, RLS)
+- **Eye Tracking**: WebGazer.js
+- **Icons**: Lucide React
+- **Styling**: Tailwind CSS with DaisyUI components
+
+## Getting Your Supabase Keys
+
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Navigate to Settings → API
+3. Copy your Project URL and anon/public key
+4. Add them to your `.env.local` file
+
+That's it! The app will handle user registration, authentication, and data persistence automatically.
