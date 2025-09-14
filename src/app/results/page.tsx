@@ -63,7 +63,8 @@ export default function ResultsPage() {
             startTime: new Date(data.start_time).getTime(),
             endTime: new Date(data.end_time).getTime(),
             gazeData: data.gaze_data,
-            metrics: data.metrics
+            metrics: data.metrics,
+            claudeAnalysis: data.claude_analysis
           };
           
           console.log("✅ Session data ready for display");
@@ -113,6 +114,7 @@ export default function ResultsPage() {
       data={session.gazeData}
       start={session.startTime}
       end={session.endTime}
+      claudeAnalysis={session.claudeAnalysis}
     />
     </>
   );

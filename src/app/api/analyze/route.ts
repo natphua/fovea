@@ -1,28 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({
+  apiKey: process.env.CLAUDE_API_KEY,
+});
 
 export async function POST(req: NextRequest) {
-  const { focusResults } = await req.json();
+  try {
+    const { focusResults } = await req.json();
 
-  // Call Claude API
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": process.env.CLAUDE_API_KEY!,
-      "content-type": "application/json",
-      "anthropic-version": "2023-06-01"
-    },
-    body: JSON.stringify({
-      model: "claude-3-opus-20240229", 
-      max_tokens: 1024,
+    const message = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 20000,
+      temperature: 1,
+      system: "You are an expert focus and productivity analyst. Analyze the provided focus test results and provide insights on attention patterns, areas for improvement, and recommendations for better focus.",
       messages: [
         {
           role: "user",
           content: `Analyze these focus test results: ${JSON.stringify(focusResults)}`
         }
       ]
-    })
-  });
+    });
 
-  const data = await response.json();
-  return NextResponse.json({ analysis: data });
+    return NextResponse.json({ 
+      analysis: message.content[0].type === 'text' ? message.content[0].text : 'Analysis completed'
+    });
+  } catch (error) {
+    console.error('Error calling Anthropic API:', error);
+    return NextResponse.json(
+      { error: 'Failed to analyze focus results' },
+      { status: 500 }
+    );
+  }
 }

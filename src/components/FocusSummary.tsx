@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Eye, Target, Clock, LucideIcon } from "lucide-react";
+import { Eye, Target, Clock, LucideIcon, ChartColumnDecreasing } from "lucide-react";
 import { computeMetrics } from "@/lib/focus/metrics";
 import { GazePoint } from "@/lib/focus/session";
 
@@ -8,9 +8,10 @@ interface FocusSummaryProps {
   data: GazePoint[];
   start: number;
   end: number;
+  claudeAnalysis?: string;
 }
 
-const FocusSummary: React.FC<FocusSummaryProps> = ({ data, start, end }) => {
+const FocusSummary: React.FC<FocusSummaryProps> = ({ data, start, end, claudeAnalysis }) => {
   const metrics = computeMetrics(data, start, end);
 
   type CircularProgressProps = {
@@ -160,7 +161,7 @@ const MetricItem = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column */}
         <div className="space-y-6">
           <div className="card bg-base-100 shadow-lg border border-base-300">
@@ -197,28 +198,23 @@ const MetricItem = ({
         </div>
 
         {/* Middle Column */}
-        <div className="space-y-6">
-          <div className="card bg-base-100 shadow-lg border border-base-300">
-            <div className="card-body">
-              <h3 className="card-title text-lg mb-4">Your Heat Map</h3>
-              <HeatMap />
+        {claudeAnalysis && (
+            <div className="card bg-base-100 shadow-lg border border-base-300 flex-grow flex-2">
+              <div className="card-body">
+                <h3 className="card-title text-lg mb-4 flex items-center gap-2">
+                  <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-sm font-bold">AI</span>
+                  </div>
+                  AI Insights
+                </h3>
+                <div className="prose prose-sm max-w-none text-base-content">
+                  <div className="whitespace-pre-wrap">{claudeAnalysis}</div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
 
         {/* Right Column */}
-        <div>
-          <div className="card bg-base-100 shadow-lg border border-base-300">
-            <div className="card-body">
-              <h3 className="card-title text-lg mb-4">Content Engagement</h3>
-              <ul className="list-disc pl-6 text-base-content">
-                {metrics.contentEngagement.map((cell, i) => (
-                  <li key={i}>{cell}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
