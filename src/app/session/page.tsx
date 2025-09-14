@@ -111,7 +111,7 @@ export default function StartSessionPage() {
         <div className="h-screen p-6">
           <div className="h-full flex gap-4">
             {/* Left Control Panel */}
-            <div className="w-[30%] bg-black flex flex-col p-6 rounded-xl self-start min-h-fit">
+            <div className="w-[20%] bg-black flex flex-col p-6 rounded-xl self-start min-h-fit">
               {/* Header */}
               <div className="mb-6">
                 <div className="flex items-center justify-center gap-3">
@@ -127,7 +127,7 @@ export default function StartSessionPage() {
 
               {/* Elapsed Time */}
               <div className="mb-6">
-                <div className="bg-gray-800 rounded-xl p-4 border border-green-500/30">
+                <div className="bg-gray-800 rounded-xl p-4 border border-green-500/50">
                   <div className="text-center">
                     <div className="text-3xl font-mono text-green-400 font-bold">
                       {formatTime(elapsedTime)}
@@ -149,13 +149,13 @@ export default function StartSessionPage() {
                   }}
                   className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  End Session & View Results
+                  End Session
                 </button>
               </div>
             </div>
 
             {/* Right Media Viewer - 70% */}
-            <div className="w-[70%] bg-black relative rounded-xl overflow-hidden">
+            <div className="w-[80%] bg-black relative rounded-xl overflow-hidden">
               {embedUrl ? (
                 <>
                   {embedUrl.includes("youtube.com") ? (
