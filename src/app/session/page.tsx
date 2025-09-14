@@ -12,22 +12,12 @@ const WebGazerComponent = dynamic(
   { ssr: false }
 );
 
-// PDF viewer only on client (avoids pdfjs Node canvas error)
-const PDFViewer = dynamic(
-  () => import("@react-pdf-viewer/core").then((mod) => mod.Worker),
-  { ssr: false }
-);
-
 export default function StartSessionPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const {
     startSession,
-    addPoint,
-    endSession,
-    session,
-    setFileProtocol,
-    recoverIncompleteSession,
+    handleEndSession,
     pauseSession,
     resumeSession,
     isPaused,
@@ -39,20 +29,12 @@ export default function StartSessionPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  // Authentication check and recovery check
+  // Authentication check
   useEffect(() => {
     if (!loading && !user) {
       router.push('/auth/login');
-    } else if (user && !hasStarted) {
-      // Check for incomplete session on load and automatically recover
-      const incompleteSession = recoverIncompleteSession();
-      if (incompleteSession) {
-        console.log("🔄 Automatically recovering incomplete session with", incompleteSession.gazeData.length, "gaze points");
-        // Navigate to results with the recovered session
-        router.push(`/results?session=${incompleteSession.sessionId}`);
-      }
-    }
-  }, [user, loading, router, hasStarted, recoverIncompleteSession]);
+    } 
+  }, [user, loading, router]);
 
   // Timer effect - pause when session is paused
   useEffect(() => {
@@ -231,7 +213,7 @@ export default function StartSessionPage() {
               <div className="mt-2">
                 <button
                   onClick={() => {
-                    endSession();
+                    handleEndSession();
                     setHasStarted(false);
                     setEmbedUrl("");
                     setPdfFile(null);

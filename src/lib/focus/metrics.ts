@@ -60,7 +60,7 @@ export function computeMetrics(data: GazePoint[], start: number, end: number): F
   let peakCount = 0;
   const windowSize = 10 * 1000; // 10s
   for (let i=0; i<data.length; i++) {
-    const t0 = data[i].t;
+    const t0 = data[i].t - start;
     const t1 = t0 + windowSize;
     const count = data.filter(p => p.t >= t0 && p.t <= t1 &&
       p.x >= mainArea.xMin && p.x <= mainArea.xMax &&

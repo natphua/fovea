@@ -46,7 +46,7 @@ export default function ResultsPage() {
           });
 
           // Verify we have complete data
-          if (!data.gaze_data || data.gaze_data.length === 0) {
+          if (!data.gaze_data && data.gaze_data.length > 0) {
             setError("No gaze data found in session");
             setLoading(false);
             return;
@@ -107,10 +107,13 @@ export default function ResultsPage() {
   }
 
   return (
+    <>
+    <NavBar />
     <FocusSummary
       data={session.gazeData}
       start={session.startTime}
       end={session.endTime}
     />
+    </>
   );
 }

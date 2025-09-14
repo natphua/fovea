@@ -22,13 +22,7 @@ export default function NavBar() {
       <div className="navbar-end">
         <div className="hidden lg:flex">
           <ul className="menu menu-horizontal px-1 gap-2">
-            {!user && (
               <>
-                <li>
-                  <Link href="/measure" className="btn btn-ghost font-medium">
-                    Measure Your Focus
-                  </Link>
-                </li>
                 <li>
                   <Link href="/how-it-works" className="btn btn-ghost font-medium">
                     How It Works
@@ -45,27 +39,6 @@ export default function NavBar() {
                   </Link>
                 </li>
               </>
-            )}
-            
-            {user && (
-              <>
-                <li>
-                  <Link href="/how-it-works" className="btn btn-ghost font-medium">
-                    How we measure
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="btn btn-ghost font-medium">
-                    Contact Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about" className="btn btn-ghost font-medium">
-                    About
-                  </Link>
-                </li>
-              </>
-            )}
             
             {user ? (
               <div className="flex items-center gap-2">
