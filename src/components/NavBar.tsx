@@ -59,6 +59,11 @@ export default function NavBar() {
                     Contact Us
                   </Link>
                 </li>
+                <li>
+                  <Link href="/about" className="btn btn-ghost font-medium">
+                    About
+                  </Link>
+                </li>
               </>
             )}
             
