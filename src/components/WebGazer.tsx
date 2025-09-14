@@ -288,7 +288,7 @@ export default function WebGazerComponent() {
       )}
 
       {/* Calibration instructions overlay */}
-      {isCalibrated && (
+      {/* {isCalibrated && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
           <div className="tooltip tooltip-top" data-tip="Purple dot shows averaged gaze prediction from last 3 points">
             <div className="badge badge-info gap-2">
@@ -300,7 +300,7 @@ export default function WebGazerComponent() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 }
