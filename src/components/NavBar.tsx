@@ -14,7 +14,7 @@ export default function NavBar() {
     <div className="navbar bg-base-100 px-4 lg:px-8">
       <div className="navbar-start">
         <Link href="/" className="btn btn-ghost text-xl font-bold flex items-center gap-2">
-          <img src="/fovea-icon.svg" alt="Fovea" className="h-6 w-6" />
+          <img src="/fovea-icon.svg" alt="Fovea" className="h-8 w-8" />
           Fovea
         </Link>
       </div>
@@ -47,15 +47,30 @@ export default function NavBar() {
               </>
             )}
             
+            {user && (
+              <>
+                <li>
+                  <Link href="/how-it-works" className="btn btn-ghost font-medium">
+                    How we measure
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="btn btn-ghost font-medium">
+                    Contact Us
+                  </Link>
+                </li>
+              </>
+            )}
+            
             {user ? (
               <div className="flex items-center gap-2">
                 <div className="dropdown dropdown-end">
                   <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                      <User className="w-4 h-4 text-primary-content" />
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                      <User className="w-5 h-5 text-primary-content" />
                     </div>
                   </div>
-                  <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-300">
+                  <ul tabIndex={0} className="mt-3 z-[1] p-3 shadow menu dropdown-content bg-base-100 rounded-box w-60 border border-base-300">
                     <li className="menu-title">
                       <span>{user.email}</span>
                     </li>
@@ -67,7 +82,7 @@ export default function NavBar() {
                     </li>
                     <li>
                       <button onClick={handleSignOut} className="text-error">
-                        <LogOut className="w-4 h-4" />
+                        <LogOut className="w-5 h-5" />
                         Sign Out
                       </button>
                     </li>

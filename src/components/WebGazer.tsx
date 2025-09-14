@@ -114,6 +114,8 @@ export default function WebGazerComponent() {
                 .applyKalmanFilter(true) // Apply smoothing filter
                 .setGazeListener((data: any, elapsedTime: number) => {
                   if (data && data.x && data.y) {
+                    console.log("🎯 WebGazer detected gaze:", data.x, data.y);
+                    
                     // Store gaze point with timestamp for local display
                     const localGazePoint: GazePoint = {
                       x: data.x,
@@ -124,11 +126,14 @@ export default function WebGazerComponent() {
                     gazePointsRef.current.push(localGazePoint);
                     
                     // Also add to the focus session hook for results page (using 't' property)
-                    addPoint({
+                    const gazePointForSession = {
                       x: data.x,
                       y: data.y,
                       t: Date.now()
-                    });
+                    };
+                    
+                    console.log("📊 Calling addPoint with:", gazePointForSession);
+                    addPoint(gazePointForSession);
                     
                     // Keep only last 5 seconds of data to prevent memory buildup
                     const fiveSecondsAgo = Date.now() - 5000;
@@ -136,7 +141,9 @@ export default function WebGazerComponent() {
                       point => point.timestamp > fiveSecondsAgo
                     );
 
-                    console.log("Gaze:", data.x, data.y, "Points stored:", gazePointsRef.current.length);
+                    console.log("📈 Local points stored:", gazePointsRef.current.length);
+                  } else {
+                    console.log("❌ Invalid gaze data:", data);
                   }
                 })
                 .begin()

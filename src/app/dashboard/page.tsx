@@ -141,7 +141,7 @@ export default function DashboardPage() {
                     <p className="text-base-content/70 mb-4">No focus sessions yet</p>
                     <button 
                       onClick={() => router.push('/session')}
-                      className="btn btn-primary"
+                      className="btn btn-primary btn-sm"
                     >
                       Start Your First Session
                     </button>

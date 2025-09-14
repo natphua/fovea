@@ -15,8 +15,11 @@ export function computeMetrics(data: GazePoint[], start: number, end: number): F
   }
 
   // 1️⃣ Focus score: % of time gaze stays within main content area
-  const mainArea = { xMin: window.innerWidth*0.1, xMax: window.innerWidth*0.9,
-                     yMin: window.innerHeight*0.1, yMax: window.innerHeight*0.9 };
+  // Use default screen dimensions if window is not available (SSR)
+  const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+  const screenHeight = typeof window !== 'undefined' ? window.innerHeight : 1080;
+  const mainArea = { xMin: screenWidth*0.1, xMax: screenWidth*0.9,
+                     yMin: screenHeight*0.1, yMax: screenHeight*0.9 };
 
   const focusedPoints = data.filter(p => 
     p.x >= mainArea.xMin && p.x <= mainArea.xMax &&
@@ -89,8 +92,8 @@ export function computeMetrics(data: GazePoint[], start: number, end: number): F
   // 6️⃣ Content engagement: divide screen into 3x3 grid
   const engagementMap = new Map<string, number>();
   for (const p of focusedPoints) {
-    const col = Math.min(2, Math.floor(p.x / (window.innerWidth / 3)));
-    const row = Math.min(2, Math.floor(p.y / (window.innerHeight / 3)));
+    const col = Math.min(2, Math.floor(p.x / (screenWidth / 3)));
+    const row = Math.min(2, Math.floor(p.y / (screenHeight / 3)));
     const key = `Cell ${row+1}-${col+1}`;
     engagementMap.set(key, (engagementMap.get(key)||0)+1);
   }

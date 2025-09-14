@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { useFocusSession } from "@/hooks/useFocusSession"; // adjust path
+import { useFocusSession } from "@/hooks/useFocusSession";
+import { useAuth } from "@/contexts/AuthContext";
 
 // WebGazer only on client
 const WebGazerComponent = dynamic(
@@ -17,7 +19,19 @@ const PDFViewer = dynamic(
 );
 
 export default function StartSessionPage() {
-  const { startSession, endSession, session } = useFocusSession();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const {
+    startSession,
+    addPoint,
+    endSession,
+    session,
+    setFileProtocol,
+    recoverIncompleteSession,
+    pauseSession,
+    resumeSession,
+    isPaused,
+  } = useFocusSession();
 
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [embedUrl, setEmbedUrl] = useState("");
@@ -25,62 +39,87 @@ export default function StartSessionPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  // Timer effect
+  // Authentication check and recovery check
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/login');
+    } else if (user && !hasStarted) {
+      // Check for incomplete session on load and automatically recover
+      const incompleteSession = recoverIncompleteSession();
+      if (incompleteSession) {
+        console.log("🔄 Automatically recovering incomplete session with", incompleteSession.gazeData.length, "gaze points");
+        // Navigate to results with the recovered session
+        router.push(`/results?session=${incompleteSession.sessionId}`);
+      }
+    }
+  }, [user, loading, router, hasStarted, recoverIncompleteSession]);
+
+  // Timer effect - pause when session is paused
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (hasStarted) {
+    if (hasStarted && !isPaused) {
       interval = setInterval(() => {
         setElapsedTime(prev => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [hasStarted]);
+  }, [hasStarted, isPaused]);
 
   // Check for existing file protocol from dashboard
   useEffect(() => {
-    const savedFileProtocol = localStorage.getItem('sessionFileProtocol');
-    if (savedFileProtocol) {
-      // Clear it from localStorage
-      localStorage.removeItem('sessionFileProtocol');
-      
-      // Check if it's a YouTube URL
-      if (savedFileProtocol.includes('youtube.com') || savedFileProtocol.includes('youtu.be')) {
-        setYoutubeUrl(savedFileProtocol);
-        const match = savedFileProtocol.match(/v=([^&]+)/);
-        if (match) {
-          setEmbedUrl(`https://www.youtube.com/embed/${match[1]}`);
-          setHasStarted(true);
-          startSession(savedFileProtocol);
+    const initializeFromSavedProtocol = async () => {
+      const savedFileProtocol = localStorage.getItem('sessionFileProtocol');
+      if (savedFileProtocol) {
+        // Clear it from localStorage
+        localStorage.removeItem('sessionFileProtocol');
+        
+        // Check if it's a YouTube URL
+        if (savedFileProtocol.includes('youtube.com') || savedFileProtocol.includes('youtu.be')) {
+          setYoutubeUrl(savedFileProtocol);
+          const match = savedFileProtocol.match(/v=([^&]+)/);
+          if (match) {
+            setEmbedUrl(`https://www.youtube.com/embed/${match[1]}`);
+            
+            // Start session FIRST, then set hasStarted to trigger WebGazer
+            await startSession(savedFileProtocol);
+            setHasStarted(true);
+          }
+        } else {
+          // It's a file name - we can't recreate the file object, so just show a message
+          alert(`Ready to start session with: ${savedFileProtocol}\nPlease upload the file again to continue.`);
         }
-      } else {
-        // It's a file name - we can't recreate the file object, so just show a message
-        alert(`Ready to start session with: ${savedFileProtocol}\nPlease upload the file again to continue.`);
       }
-    }
+    };
+
+    initializeFromSavedProtocol();
   }, [startSession]);
 
   // YouTube embed
-  const handleYoutubeSubmit = (e: React.FormEvent) => {
+  const handleYoutubeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const match = youtubeUrl.match(/v=([^&]+)/);
     if (match) {
       const embedUrl = `https://www.youtube.com/embed/${match[1]}`;
       setEmbedUrl(embedUrl);
+      
+      // Start session FIRST, then set hasStarted to trigger WebGazer
+      await startSession(youtubeUrl);
       setHasStarted(true);
-      startSession(youtubeUrl); // Pass the original YouTube URL as file protocol
     }
   };
 
   // File upload (PDF or MOV)
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setPdfFile(file);
     const url = URL.createObjectURL(file);
     setEmbedUrl(url);
+    
+    // Start session FIRST, then set hasStarted to trigger WebGazer
+    await startSession(file.name);
     setHasStarted(true);
-    startSession(file.name); // Pass the file name as file protocol
   };
 
   // Format time helper
@@ -89,6 +128,20 @@ export default function StartSessionPage() {
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
+
+  // Don't render anything if user is not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
 
   return (
     <>
@@ -160,8 +213,22 @@ export default function StartSessionPage() {
                 </div>
               </div>
               
-              {/* End Session Button */}
+              {/* Pause/Resume Button */}
               <div className="mt-6">
+                <button
+                  onClick={isPaused ? resumeSession : pauseSession}
+                  className={`w-full font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 mb-4 ${
+                    isPaused 
+                      ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                      : "bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white"
+                  }`}
+                >
+                  {isPaused ? "▶️ Resume Session" : "⏸️ Pause Session"}
+                </button>
+              </div>
+
+              {/* End Session Button */}
+              <div className="mt-2">
                 <button
                   onClick={() => {
                     endSession();
