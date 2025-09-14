@@ -382,65 +382,6 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Focus Metrics */}
-        <section className="py-16 px-6">
-          <div className="max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-4xl font-bold text-base-content mb-4">
-                How We Measure Focus
-              </h2>
-              <p className="text-lg text-base-content/70">
-                Advanced eye-tracking technology provides precise insights into attention patterns
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <MetricCard
-                title="Fixation Duration"
-                description="How long the eye stays stationary on specific points. Longer fixations indicate deeper concentration."
-                icon={Eye}
-                color="blue"
-              />
-              <MetricCard
-                title="Time to First Fixation (TTFF)"
-                description="Initial detection speed to specific areas. Fast TTFF + long fixation = good concentration."
-                icon={Zap}
-                color="green"
-              />
-              <MetricCard
-                title="Blink Rate"
-                description="Frequency of blinking while focusing. Lower blink rates often indicate higher concentration levels."
-                icon={EyeIcon}
-                color="purple"
-              />
-              <MetricCard
-                title="Pupil Dilation"
-                description="Pupils typically become smaller when concentrating. This metric reveals cognitive load and focus intensity."
-                icon={Search}
-                color="orange"
-              />
-              <MetricCard
-                title="Heat Maps"
-                description="Visual representation of attention distribution. Reveals what elements actually capture user attention."
-                icon={Flame}
-                color="red"
-              />
-              <MetricCard
-                title="Revisits"
-                description="Number of returns to specific content. Indicates uncertainty, continued interest, or difficulty understanding."
-                icon={RotateCcw}
-                color="blue"
-              />
-            </div>
-          </div>
-        </section>
-
         {/* Call to Action */}
         <section className="relative py-20 px-6 overflow-hidden">
           {/* Dynamic Gradient Background */}
@@ -614,7 +555,7 @@ export default function AboutPage() {
                 {/* Button Glow Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl"></div>
                 
-                <span>Start Measuring Focus</span>
+                <span className="hover:cursor-pointer">Start Measuring Focus</span>
                 <motion.div
                   animate={{ x: [0, 5, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
