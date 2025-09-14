@@ -8,7 +8,16 @@ import NavBar from "@/components/NavBar";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
+import { Suspense } from 'react';
+
 export default function ResultsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Results />
+    </Suspense>
+  );
+}
+function Results() {
   const [session, setSession] = useState<FocusSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
