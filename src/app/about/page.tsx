@@ -574,15 +574,15 @@ export default function AboutPage() {
               >
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span>Privacy-first</span>
+                  <span>Privacy-First</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <span>Research-backed</span>
+                  <span>Research-Backed</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                  <span>ADHD-friendly</span>
+                  <span>User-Focused</span>
                 </div>
               </motion.div>
             </motion.div>

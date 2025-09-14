@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inria_Serif } from "next/font/google";
+import { Geist, Geist_Mono, Raleway } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
-const inriaSerif = Inria_Serif({
-  variable: "--font-inria-serif",
+const raleway = Raleway({
+  variable: "--font-raleway",
   subsets: ["latin"],
-  weight: ["300", "400", "700"], // Light, Regular, Bold
 });
 
 const geistSans = Geist({
@@ -32,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inriaSerif.variable} antialiased
+        className={`${raleway.variable} antialiased
           min-h-screen bg-base-100 overflow-x-hidden
           snap-y snap-mandatory scroll-smooth`}
       >
