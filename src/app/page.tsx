@@ -169,7 +169,7 @@ export default function Landing() {
         {/* FOOTER */}
         <footer className="snap-end bg-base-200 py-10 text-center">
           <p className="text-sm text-base-content/60">
-            © 2024 Fovea — All rights reserved
+            © Fovea — HackMIT 2025
           </p>
         </footer>
       </main>

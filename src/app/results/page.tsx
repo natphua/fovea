@@ -107,10 +107,13 @@ export default function ResultsPage() {
   }
 
   return (
+    <>
+    <NavBar />
     <FocusSummary
       data={session.gazeData}
       start={session.startTime}
       end={session.endTime}
     />
+    </>
   );
 }
