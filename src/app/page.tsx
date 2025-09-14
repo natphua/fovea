@@ -41,6 +41,42 @@ function FadeSection({
   );
 }
 
+/* -------------------------- Masked fade section ------------------------- */
+function MaskedFadeSection({
+  children,
+  snap = true,
+}: {
+  children: React.ReactNode;
+  snap?: boolean;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, {
+    amount: 0.3,
+    margin: "0px 0px -20% 0px",
+  });
+
+  const variants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  return (
+    <motion.section
+      ref={ref}
+      data-snap
+      className={`${snap ? "snap-start snap-always" : ""
+        } relative w-full bg-base-100`}
+      variants={variants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      style={{ scrollSnapStop: snap ? "always" : "normal" }}
+    >
+      {children}
+    </motion.section>
+  );
+}
+
 /* ------------------------------- Step Card UI ------------------------------ */
 function StepCard({
   no,
@@ -165,6 +201,31 @@ export default function Landing() {
           iconFile="improve.svg"
           iconPosition="right-0 md:right-4 lg:right-22"
         />
+
+        {/* FULL-BLEED FEATHERED CTA */}
+        <MaskedFadeSection snap={false}>
+          <div className="relative w-full bg-gradient-to-b from-base-100 via-accent/50 to-base-100 py-32 px-6">
+            {/* Top blur overlay */}
+            <div className="absolute top-0 left-0 right-0 h-16 backdrop-blur-sm bg-gradient-to-b from-base-100/60 to-transparent pointer-events-none z-10"></div>
+            {/* Bottom blur overlay */}
+            <div className="absolute bottom-0 left-0 right-0 h-16 backdrop-blur-sm bg-gradient-to-t from-base-100/60 to-transparent pointer-events-none z-10"></div>
+
+            <div className="max-w-3xl mx-auto text-center relative z-20">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-base-content">
+                You're all set!
+              </h2>
+              <p className="text-lg md:text-xl mb-8 text-base-content/70">
+                Upload your material and discover how focused you really are.
+              </p>
+              <button
+                onClick={() => router.push("/media-selection")}
+                className="btn btn-primary btn-lg px-8 rounded-full shadow-lg hover:shadow-xl transition-all"
+              >
+                Start a Session
+              </button>
+            </div>
+          </div>
+        </MaskedFadeSection>
 
         {/* FOOTER */}
         <footer className="snap-end bg-base-200 py-10 text-center">
