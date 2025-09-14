@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import FocusSummary from "@/components/FocusSummary";
 import { FocusSession } from "@/lib/focus/session";
+import NavBar from "@/components/NavBar";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 

@@ -121,7 +121,7 @@ export default function Landing() {
 
                 <div className="mt-8">
                   <button
-                    onClick={() => router.push("/media-selection")}
+                    onClick={() => router.push("/session")}
                     className="btn btn-primary btn-lg px-8 rounded-full shadow-lg hover:shadow-xl transition-all"
                   >
                     Start a Session

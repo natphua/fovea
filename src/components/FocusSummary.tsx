@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Eye, Target, Clock, RefreshCw } from "lucide-react";
+import { Eye, Target, Clock, LucideIcon } from "lucide-react";
 import { computeMetrics } from "@/lib/focus/metrics";
 import { GazePoint } from "@/lib/focus/session";
 
@@ -13,7 +13,12 @@ interface FocusSummaryProps {
 const FocusSummary: React.FC<FocusSummaryProps> = ({ data, start, end }) => {
   const metrics = computeMetrics(data, start, end);
 
-  const CircularProgress = ({ percentage, size = 180 }: { percentage: number; size?: number }) => {
+  type CircularProgressProps = {
+    percentage: number;
+    size?: number;
+  };
+
+  const CircularProgress = ({ percentage, size = 180 }: CircularProgressProps) => {
     const radius = (size - 16) / 2;
     const circumference = 2 * Math.PI * radius;
     const strokeDasharray = circumference;
@@ -61,20 +66,22 @@ const FocusSummary: React.FC<FocusSummaryProps> = ({ data, start, end }) => {
     );
   };
 
-  const MetricItem = ({
-    icon: Icon,
-    label,
-    value,
-    unit = "",
-    color = "blue",
-  }: {
-    icon: React.ComponentType<{ className?: string }>;
-    label: string;
-    value: string | number;
-    unit?: string;
-    color?: "blue" | "green" | "yellow" | "purple";
-  }) => {
-    const colorClasses: Record<string, string> = {
+  type MetricItemProps = {
+  icon: LucideIcon; // or React.ComponentType<{ className?: string }>
+  label: string;
+  value: string | number;
+  unit?: string;
+  color?: "blue" | "green" | "yellow" | "purple";
+};
+
+const MetricItem = ({
+  icon: Icon,
+  label,
+  value,
+  unit = "",
+  color = "blue",
+}: MetricItemProps) => {
+    const colorClasses: Record<NonNullable<MetricItemProps["color"]>, string> = {
       blue: "from-blue-500 to-blue-600",
       green: "from-green-500 to-green-600",
       yellow: "from-yellow-500 to-yellow-600",
