@@ -212,13 +212,13 @@ export default function Landing() {
 
             <div className="max-w-3xl mx-auto text-center relative z-20">
               <h2 className="text-4xl md:text-5xl font-bold mb-6 text-base-content">
-                You're all set!
+                You&apos;re all set!
               </h2>
               <p className="text-lg md:text-xl mb-8 text-base-content/70">
                 Upload your material and discover how focused you really are.
               </p>
               <button
-                onClick={() => router.push("/media-selection")}
+                onClick={() => router.push("/session")}
                 className="btn btn-primary btn-lg px-8 rounded-full shadow-lg hover:shadow-xl transition-all"
               >
                 Start a Session

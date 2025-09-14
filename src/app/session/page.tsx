@@ -27,7 +27,6 @@ export default function StartSessionPage() {
     endSession,
     session,
     setFileProtocol,
-    recoverIncompleteSession,
     pauseSession,
     resumeSession,
     isPaused,
@@ -39,20 +38,12 @@ export default function StartSessionPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  // Authentication check and recovery check
+  // Authentication check
   useEffect(() => {
     if (!loading && !user) {
       router.push('/auth/login');
-    } else if (user && !hasStarted) {
-      // Check for incomplete session on load and automatically recover
-      const incompleteSession = recoverIncompleteSession();
-      if (incompleteSession) {
-        console.log("🔄 Automatically recovering incomplete session with", incompleteSession.gazeData.length, "gaze points");
-        // Navigate to results with the recovered session
-        router.push(`/results?session=${incompleteSession.sessionId}`);
-      }
-    }
-  }, [user, loading, router, hasStarted, recoverIncompleteSession]);
+    } 
+  }, [user, loading, router]);
 
   // Timer effect - pause when session is paused
   useEffect(() => {

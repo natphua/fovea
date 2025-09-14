@@ -46,7 +46,7 @@ export default function ResultsPage() {
           });
 
           // Verify we have complete data
-          if (!data.gaze_data || data.gaze_data.length === 0) {
+          if (!data.gaze_data && data.gaze_data.length > 0) {
             setError("No gaze data found in session");
             setLoading(false);
             return;
