@@ -218,7 +218,7 @@ export default function Landing() {
                 Upload your material and discover how focused you really are.
               </p>
               <button
-                onClick={() => router.push("/session")}
+                onClick={() => router.push("/")}
                 className="btn btn-primary btn-lg px-8 rounded-full shadow-lg hover:shadow-xl transition-all"
               >
                 Start a Session
