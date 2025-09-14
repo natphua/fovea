@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useFocusSession } from "@/hooks/useFocusSession"; // adjust path
 
@@ -23,6 +23,18 @@ export default function StartSessionPage() {
   const [embedUrl, setEmbedUrl] = useState("");
   const [hasStarted, setHasStarted] = useState(false);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
+
+  // Timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (hasStarted) {
+      interval = setInterval(() => {
+        setElapsedTime(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [hasStarted]);
 
   // YouTube embed
   const handleYoutubeSubmit = (e: React.FormEvent) => {
@@ -47,8 +59,28 @@ export default function StartSessionPage() {
     startSession();
   };
 
+  // Format time helper
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
-    <section className="min-h-screen p-6 flex flex-col items-center">
+    <section className="min-h-screen p-6 flex flex-col items-center relative">
+      {/* Sticky Elapsed Time */}
+      {hasStarted && (
+        <div className="fixed top-4 left-4 z-50">
+          <div className="bg-black/80 backdrop-blur-sm border border-green-500/30 rounded-xl px-4 py-2 shadow-2xl">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-green-400 font-mono text-sm font-semibold">
+                {formatTime(elapsedTime)}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
       <h1 className="text-3xl font-bold mb-6 text-center">
         {hasStarted ? (
           <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
