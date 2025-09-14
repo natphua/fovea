@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import FocusSummary from "@/components/FocusSummary";
 import { FocusSession } from "@/lib/focus/session";
+import NavBar from "@/components/NavBar";
 
 export default function ResultsPage() {
   const [session, setSession] = useState<FocusSession | null>(null);
