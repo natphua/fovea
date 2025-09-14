@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import { useFocusSession } from "@/hooks/useFocusSession";
 
 declare global {
   interface Window {
@@ -14,6 +15,7 @@ interface GazePoint {
 }
 
 export default function WebGazerComponent() {
+  const { addPoint } = useFocusSession();
   const [isInitialized, setIsInitialized] = useState(false);
   const [cameraStatus, setCameraStatus] = useState<'requesting' | 'granted' | 'denied'>('requesting');
   const [showCalibration, setShowCalibration] = useState(false);
@@ -106,14 +108,21 @@ export default function WebGazerComponent() {
                 .applyKalmanFilter(true) // Apply smoothing filter
                 .setGazeListener((data: any, elapsedTime: number) => {
                   if (data && data.x && data.y) {
-                    // Store gaze point with timestamp
-                    const gazePoint: GazePoint = {
+                    // Store gaze point with timestamp for local display
+                    const localGazePoint: GazePoint = {
                       x: data.x,
                       y: data.y,
                       timestamp: Date.now()
                     };
                     
-                    gazePointsRef.current.push(gazePoint);
+                    gazePointsRef.current.push(localGazePoint);
+                    
+                    // Also add to the focus session hook for results page (using 't' property)
+                    addPoint({
+                      x: data.x,
+                      y: data.y,
+                      t: Date.now()
+                    });
                     
                     // Keep only last 5 seconds of data to prevent memory buildup
                     const fiveSecondsAgo = Date.now() - 5000;

@@ -1,140 +1,231 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
 import NavBar from "@/components/NavBar";
+import { Eye, FileText, Clock, TrendingUp, Plus } from "lucide-react";
 
-/* -------------------------- Reusable fade section ------------------------- */
-function FadeSection({
-  children,
-  snap = true,
-}: {
-  children: React.ReactNode;
-  snap?: boolean;
-}) {
-  return (
-    <motion.section
-      data-snap
-      className={`${snap ? "snap-start snap-always" : ""} relative flex min-h-[100dvh] w-full items-center justify-center bg-base-100`}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.6 }}
-      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-      style={{ scrollSnapStop: "always" }}
-    >
-      {children}
-    </motion.section>
-  );
+interface FocusSession {
+  id: string;
+  start_time: string;
+  end_time: string;
+  metrics: {
+    focusScore: number;
+    sessionSummary: string;
+    attentionStability: string;
+  };
+  file_protocol?: string;
+  created_at: string;
 }
 
-/* ------------------------------- Step Card UI ------------------------------ */
-function StepCard({ no, title, subtitle }: { no: number; title: string; subtitle: string }) {
-  return (
-    <FadeSection>
-      <div className="w-full max-w-5xl px-6">
-        <div className="mx-auto grid h-[70vh] grid-cols-[96px_1fr] md:grid-cols-[140px_1fr] items-center gap-8 rounded-3xl border-4 border-accent bg-base-100 px-8">
-          <div className="text-[72px] md:text-[110px] leading-none font-semibold text-base-content/70 tabular-nums select-none text-center">
-            {no}
-          </div>
-          <div className="flex flex-col items-center md:items-start justify-center text-center md:text-left">
-            <div className="text-4xl md:text-5xl font-bold mb-4 text-base-content">{title}</div>
-            <p className="text-lg md:text-xl text-base-content/70">{subtitle}</p>
-          </div>
-        </div>
-      </div>
-    </FadeSection>
-  );
+interface PrevFile {
+  id: string;
+  file_protocol: string;
+  file_name: string;
+  last_accessed: string;
+  created_at: string;
 }
 
-/* --------------------------------- Page ---------------------------------- */
-export default function Landing() {
+export default function DashboardPage() {
+  const { user, loading } = useAuth();
   const router = useRouter();
+  const [sessions, setSessions] = useState<FocusSession[]>([]);
+  const [prevFiles, setPrevFiles] = useState<PrevFile[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/auth/login");
+      return;
+    }
+
+    if (user) {
+      fetchUserData();
+    }
+  }, [user, loading, router]);
+
+  const fetchUserData = async () => {
+    try {
+      // Fetch focus sessions
+      const { data: sessionsData, error: sessionsError } = await supabase
+        .from('focus_sessions')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (sessionsError) throw sessionsError;
+
+      // Fetch previous files
+      const { data: filesData, error: filesError } = await supabase
+        .from('prev_files')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('last_accessed', { ascending: false })
+        .limit(20);
+
+      if (filesError) throw filesError;
+
+      setSessions(sessionsData || []);
+      setPrevFiles(filesData || []);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-success';
+    if (score >= 60) return 'text-warning';
+    return 'text-error';
+  };
+
+  if (loading || loadingData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-base-100">
       <NavBar />
+      
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">Welcome back!</h1>
+            <p className="text-base-content/70 mt-1">Track your focus progress and manage your files</p>
+          </div>
+          <button 
+            onClick={() => router.push('/session')}
+            className="btn btn-primary gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Start New Session
+          </button>
+        </div>
 
-      {/* BODY */}
-      <main className="scroll-pt-[64px]">
-        {/* HERO */}
-        <FadeSection>
-          <div className="hero w-full bg-base-100">
-            <div className="hero-content text-center max-w-4xl">
-              <div>
-                <h1 className="text-5xl lg:text-7xl font-bold text-base-content leading-tight mb-8">
-                  Understand Your{" "}
-                  <span className="relative inline-block">
-                    <span className="relative z-10">Focus</span>
-                    <span className="absolute left-0 right-0 bottom-1 h-1 bg-primary rounded-full" />
-                  </span>
-                  ,<br />
-                  Improve Your{" "}
-                  <span className="relative inline-block">
-                    <span className="relative z-10">Learning</span>
-                    <span className="absolute left-0 right-0 bottom-1 h-1 bg-primary rounded-full" />
-                  </span>
-                </h1>
-
-                <div className="mt-8">
-                  <button
-                    onClick={() => router.push("/media-selection")}
-                    className="btn btn-primary btn-lg px-8 rounded-full shadow-lg hover:shadow-xl transition-all"
-                  >
-                    Start a Session
-                  </button>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Recent Sessions */}
+          <div className="lg:col-span-2">
+            <div className="card bg-base-100 shadow-lg border border-base-300">
+              <div className="card-body">
+                <div className="flex items-center gap-3 mb-6">
+                  <img src="/fovea-icon.svg" alt="Fovea" className="w-8 h-8" />
+                  <h2 className="card-title">Recent Sessions</h2>
                 </div>
 
-                <p className="mt-6 text-base-content/60">
-                  Privacy-first • Research-backed • ADHD-friendly
-                </p>
+                {sessions.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <TrendingUp className="w-8 h-8 text-base-content/50" />
+                    </div>
+                    <p className="text-base-content/70 mb-4">No focus sessions yet</p>
+                    <button 
+                      onClick={() => router.push('/session')}
+                      className="btn btn-primary"
+                    >
+                      Start Your First Session
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {sessions.map((session) => (
+                      <div key={session.id} className="p-4 border border-base-300 rounded-lg hover:bg-base-50 transition-colors cursor-pointer"
+                           onClick={() => router.push(`/results?session=${session.id}`)}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className={`text-2xl font-bold ${getScoreColor(session.metrics.focusScore)}`}>
+                                {session.metrics.focusScore}%
+                              </span>
+                              <div className="text-sm text-base-content/70">
+                                <Clock className="w-4 h-4 inline mr-1" />
+                                {formatDate(session.created_at)}
+                              </div>
+                            </div>
+                            <p className="text-sm text-base-content/70">
+                              {session.metrics.sessionSummary}
+                            </p>
+                            {session.file_protocol && (
+                              <div className="text-xs text-base-content/50 mt-1">
+                                File: {session.file_protocol}
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <div className={`badge ${session.metrics.attentionStability === 'High' ? 'badge-success' : 
+                              session.metrics.attentionStability === 'Medium' ? 'badge-warning' : 'badge-error'}`}>
+                              {session.metrics.attentionStability}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        </FadeSection>
 
-        {/* Features Intro */}
-        <div className="bg-base-200 py-20">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4">How Fovea Works</h2>
-              <p className="text-lg text-base-content/70 max-w-2xl mx-auto">
-                Our advanced technology measures your focus patterns to help you optimize your learning sessions
-              </p>
+          {/* Previous Files */}
+          <div>
+            <div className="card bg-base-100 shadow-lg border border-base-300">
+              <div className="card-body">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-secondary-content" />
+                  </div>
+                  <h2 className="card-title">Previous Session Content</h2>
+                </div>
+
+                {prevFiles.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <FileText className="w-6 h-6 text-base-content/50" />
+                    </div>
+                    <p className="text-sm text-base-content/70">No files accessed yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {prevFiles.map((file) => (
+                      <div key={file.id} className="p-3 border border-base-300 rounded-lg hover:bg-base-50 transition-colors cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <FileText className="w-4 h-4 text-base-content/70 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{file.file_name}</p>
+                            <p className="text-xs text-base-content/50">
+                              {formatDate(file.last_accessed)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-
-        {/* STEPS */}
-        <StepCard no={1} title="Upload" subtitle="Add your PDF or video" />
-        <StepCard no={2} title="Study" subtitle="Read or watch as usual" />
-        <StepCard no={3} title="Stay Focused" subtitle="Get real-time assistance" />
-        <StepCard no={4} title="Improve" subtitle="See insights and recommendations" />
-
-        {/* FINAL CTA */}
-        <FadeSection snap={false}>
-          <div className="w-full bg-primary py-24 px-6">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-base-content">
-                You’re all set!
-              </h2>
-              <p className="text-lg md:text-xl mb-8 text-base-content/70">
-                Upload your material and discover how focused you really are.
-              </p>
-              <button
-                onClick={() => router.push("/media-selection")}
-                className="btn btn-primary btn-lg px-8 rounded-full shadow-lg hover:shadow-xl transition-all"
-              >
-                Start a Session
-              </button>
-            </div>
-          </div>
-        </FadeSection>
-
-        {/* FOOTER */}
-        <footer className="snap-end bg-base-200 py-10 text-center">
-          <p className="text-sm text-base-content/60">© 2024 Fovea — All rights reserved</p>
-        </footer>
-      </main>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useFocusSession } from "@/hooks/useFocusSession"; // adjust path
 
@@ -24,14 +24,38 @@ export default function StartSessionPage() {
   const [hasStarted, setHasStarted] = useState(false);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
 
+  // Check for existing file protocol from dashboard
+  useEffect(() => {
+    const savedFileProtocol = localStorage.getItem('sessionFileProtocol');
+    if (savedFileProtocol) {
+      // Clear it from localStorage
+      localStorage.removeItem('sessionFileProtocol');
+      
+      // Check if it's a YouTube URL
+      if (savedFileProtocol.includes('youtube.com') || savedFileProtocol.includes('youtu.be')) {
+        setYoutubeUrl(savedFileProtocol);
+        const match = savedFileProtocol.match(/v=([^&]+)/);
+        if (match) {
+          setEmbedUrl(`https://www.youtube.com/embed/${match[1]}`);
+          setHasStarted(true);
+          startSession(savedFileProtocol);
+        }
+      } else {
+        // It's a file name - we can't recreate the file object, so just show a message
+        alert(`Ready to start session with: ${savedFileProtocol}\nPlease upload the file again to continue.`);
+      }
+    }
+  }, [startSession]);
+
   // YouTube embed
   const handleYoutubeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const match = youtubeUrl.match(/v=([^&]+)/);
     if (match) {
-      setEmbedUrl(`https://www.youtube.com/embed/${match[1]}`);
+      const embedUrl = `https://www.youtube.com/embed/${match[1]}`;
+      setEmbedUrl(embedUrl);
       setHasStarted(true);
-      startSession();
+      startSession(youtubeUrl); // Pass the original YouTube URL as file protocol
     }
   };
 
@@ -44,7 +68,7 @@ export default function StartSessionPage() {
     const url = URL.createObjectURL(file);
     setEmbedUrl(url);
     setHasStarted(true);
-    startSession();
+    startSession(file.name); // Pass the file name as file protocol
   };
 
   return (
