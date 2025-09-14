@@ -165,7 +165,7 @@ export default function Landing() {
                 </div>
 
                 <p className="mt-6 text-base-content/60">
-                  Privacy-first • Research-backed • ADHD-friendly
+                  Privacy-First • Research-Backed • User-Focused
                 </p>
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function Landing() {
                 Upload your material and discover how focused you really are.
               </p>
               <button
-                onClick={() => router.push("/")}
+                onClick={() => router.push("/session")}
                 className="btn btn-primary btn-lg px-8 rounded-full shadow-lg hover:shadow-xl transition-all"
               >
                 Start a Session

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useFocusSession } from "@/hooks/useFocusSession";
 import { useAuth } from "@/contexts/AuthContext";
+import NavBar from "@/components/NavBar";
 
 // WebGazer only on client
 const WebGazerComponent = dynamic(
@@ -129,12 +130,14 @@ export default function StartSessionPage() {
     <>
       {/* Before Session - Original Form Layout */}
       {!hasStarted && (
-        <section className="min-h-screen px-6 py-10 flex flex-col items-center relative">
+        <>
+        <NavBar />
+        <section className="min-h-screen px-6 py-30 flex flex-col items-center relative">
           <h1 className="text-3xl font-bold mb-6 text-center">Start a Focus Session</h1>
 
           {/* Upload UI */}
           <div className="transition-opacity duration-700 opacity-100">
-            <div className="card bg-base-100 shadow-xl p-6 mb-6 max-w-2xl">
+            <div className="card bg-base-100 shadow-xl p-6 mb-6 max-w-7xl">
               <form onSubmit={handleYoutubeSubmit} className="mb-4">
                 <label className="block mb-2 font-medium">Paste YouTube Link</label>
                 <div className="flex gap-2">
@@ -163,6 +166,7 @@ export default function StartSessionPage() {
             </div>
           </div>
         </section>
+        </>
       )}
 
       {/* After Session Starts - 30/70 Split Layout */}

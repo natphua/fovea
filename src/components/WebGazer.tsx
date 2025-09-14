@@ -329,7 +329,7 @@ export default function WebGazerComponent() {
       {/* Calibration instructions overlay */}
       {isCalibrated && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="tooltip tooltip-top" data-tip="Purple dot shows averaged gaze prediction from last 3 points">
+          <div className="tooltip tooltip-top" data-tip="Red dot shows averaged gaze prediction from last 3 points">
             <div className="badge badge-info gap-2">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>

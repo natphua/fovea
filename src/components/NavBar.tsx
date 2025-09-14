@@ -43,7 +43,7 @@ export default function NavBar() {
             {user ? (
               <div className="flex items-center gap-2">
                 <div className="dropdown dropdown-end">
-                  <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                  <div tabIndex={0} role="button" className="btn btn-ghost btn-circle p-0">
                     <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
                       <User className="w-5 h-5 text-primary-content" />
                     </div>
