@@ -12,21 +12,12 @@ const WebGazerComponent = dynamic(
   { ssr: false }
 );
 
-// PDF viewer only on client (avoids pdfjs Node canvas error)
-const PDFViewer = dynamic(
-  () => import("@react-pdf-viewer/core").then((mod) => mod.Worker),
-  { ssr: false }
-);
-
 export default function StartSessionPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const {
     startSession,
-    addPoint,
-    endSession,
-    session,
-    setFileProtocol,
+    handleEndSession,
     pauseSession,
     resumeSession,
     isPaused,
@@ -222,7 +213,7 @@ export default function StartSessionPage() {
               <div className="mt-2">
                 <button
                   onClick={() => {
-                    endSession();
+                    handleEndSession();
                     setHasStarted(false);
                     setEmbedUrl("");
                     setPdfFile(null);

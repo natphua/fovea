@@ -40,6 +40,14 @@ export default function WebGazerComponent() {
   // Use the focus session hook to get addPoint function
   const { addPoint } = useFocusSession();
 
+  const removeWebGazerUI = () => {
+    const video = document.getElementById('webgazerVideoFeed');
+    if (video && video.parentNode) video.parentNode.removeChild(video);
+
+    const canvas = document.getElementById('webgazerCanvas');
+    if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
+  };
+
   // Handle calibration point click
   const handleCalibrationClick = (event: React.MouseEvent) => {
     if (window.webgazer && isInitialized) {
@@ -55,7 +63,9 @@ export default function WebGazerComponent() {
       setTimeout(() => {
         setShowCalibration(false);
         setIsCalibrated(true);
-      }, 500);
+       
+        removeWebGazerUI();
+      }, 300);
     }
   };
 
@@ -118,13 +128,11 @@ export default function WebGazerComponent() {
               window.webgazer
                 .setRegression('ridge') // Use ridge regression for better accuracy
                 .setTracker('clmtrackr') // Use CLM face tracker
-                .showVideo(false) // Show webcam feed overlay
+                .showVideo(false) 
                 .showPredictionPoints(true) // Show individual prediction points
                 .applyKalmanFilter(true) // Apply smoothing filter
                 .setGazeListener((data) => {
                   if (data && data.x && data.y) {
-                    console.log("🎯 WebGazer detected gaze:", data.x, data.y);
-                    
                     // Store gaze point with timestamp for local display
                     const localGazePoint: GazePoint = {
                       x: data.x,
@@ -197,9 +205,20 @@ export default function WebGazerComponent() {
 
   return (
     <>
-      {/* Status indicator */}
-      <div className="fixed top-4 right-4 z-50">
-        {cameraStatus === 'requesting' && (
+      {/* Status indicators */}
+      {/* Top-right mini alerts */}
+      {/* Full-screen calibration/loading overlay for both requesting and initializing */}
+      {(cameraStatus === 'requesting' || (cameraStatus === 'granted' && !isInitialized)) && (
+        <div className="fixed inset-0 flex items-center justify-center z-40 bg-black bg-opacity-60">
+          <div className="text-white flex flex-col items-center gap-4">
+            <span className="loading loading-spinner loading-lg"></span>
+            <p className="text-lg font-semibold">Calibration Loading...</p>
+          </div>
+        </div>
+      )}
+
+      {cameraStatus === 'requesting' && (
+        <div className="fixed top-4 right-4 z-50">
           <div className="alert alert-info shadow-lg max-w-xs">
             <div className="flex items-center gap-3">
               <span className="loading loading-spinner loading-sm"></span>
@@ -209,9 +228,11 @@ export default function WebGazerComponent() {
               </div>
             </div>
           </div>
-        )}
-        
-        {cameraStatus === 'granted' && !isInitialized && (
+        </div>
+      )}
+
+      {cameraStatus === 'granted' && !isInitialized && (
+        <div className="fixed top-4 right-4 z-50">
           <div className="alert alert-warning shadow-lg max-w-xs">
             <div className="flex items-center gap-3">
               <span className="loading loading-dots loading-sm"></span>
@@ -221,8 +242,10 @@ export default function WebGazerComponent() {
               </div>
             </div>
           </div>
-        )}
-        
+        </div>
+      )}
+
+      
         {cameraStatus === 'granted' && isInitialized && !isCalibrated && (
           <div className="alert alert-warning shadow-lg max-w-xs">
             <div className="flex items-center gap-3">
@@ -265,7 +288,6 @@ export default function WebGazerComponent() {
             </div>
           </div>
         )}
-      </div>
 
       {/* Centroid prediction point */}
       <div

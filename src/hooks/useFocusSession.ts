@@ -61,6 +61,21 @@ export function useFocusSession() {
   const pauseSession = () => setIsPaused(true);
   const resumeSession = () => setIsPaused(false);
 
+  const handleEndSession = () => {
+    // Immediately show loading and navigate to a "results loading" route
+    router.push("/results-loading");
+
+    // Do the async DB work in the background
+    (async () => {
+      try {
+        await endSession(); // your existing async function
+      } catch (err) {
+        console.error("❌ Error saving session in background:", err);
+      }
+    })();
+  };
+
+
   const endSession = async () => {
     if (!session || !user) return;
 
@@ -100,8 +115,9 @@ export function useFocusSession() {
         .single();
 
       if (error) throw error;
-
-      console.log("✅ Session saved with ID:", data.id);
+      
+      // Navigate to results
+      router.push(`/results?session=${data.id}`);
 
       // Clean up backups
       localStorage.removeItem("fovea_session_gaze_data");
@@ -120,9 +136,6 @@ export function useFocusSession() {
           { onConflict: "user_id,file_protocol" }
         );
       }
-
-      // Navigate to results
-      router.push(`/results?session=${data.id}`);
     } catch (err) {
       console.error("❌ Error ending session:", err);
       router.push("/results");
@@ -133,6 +146,7 @@ export function useFocusSession() {
     startSession,
     addPoint,
     endSession,
+    handleEndSession,
     pauseSession,
     resumeSession,
     isPaused,
