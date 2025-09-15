@@ -1,4 +1,4 @@
-# Fovea - Focus Tracking App
+# Fovea - Focus Tracking App (HackMIT 2025)
 
 A Next.js application that uses eye-tracking technology to measure and improve your focus while reading or working. Built with Supabase for authentication and data persistence.
 
